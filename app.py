@@ -116,13 +116,13 @@ def main():
     if st.button("📂 폴더 삭제"):
         delete_files_and_vectorstores()
         delete_folder(UPLOAD_FOLDER)
+        st.session_state.client = OpenAI()
         st.session_state.thread = (st.session_state.client).beta.threads.create()
 
     st.markdown("---")
 
     if "client" not in st.session_state: 
-        client = OpenAI()
-        st.session_state.client = client
+        st.session_state.client = OpenAI()
         assistant = client.beta.assistants.create(
             instructions="친절한 어시스턴트 봇이다.",
             model=MODEL_NAME,

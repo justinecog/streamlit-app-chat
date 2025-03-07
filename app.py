@@ -116,6 +116,7 @@ def main():
     if st.button("📂 폴더 삭제"):
         delete_files_and_vectorstores()
         delete_folder(UPLOAD_FOLDER)
+        st.session_state.thread = (st.session_state.client).beta.threads.create()
 
     st.markdown("---")
 

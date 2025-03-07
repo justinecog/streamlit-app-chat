@@ -45,6 +45,14 @@ def get_uploaded_files(directory):
     if os.path.exists(directory):
         return os.listdir(directory)
     return []
+    
+def create_vectorstore():
+    client = st.session_state.client
+    vector_store = client.beta.vector_stores.create(
+        name="자료",
+        expires_after={"anchor": "last_active_at", "days": 1}
+    )
+    st.session_state.vector_store = vector_store
 
 def delete_files_and_vectorstores():
     client = st.session_state.client
@@ -55,6 +63,7 @@ def delete_files_and_vectorstores():
         for file in all_files:
             client.files.delete(file.id)
         client.beta.vector_stores.delete(vector_store_id)
+    create_vectorstore()
 
 def upload_file_to_vectorstore(file):
     client = st.session_state.client
@@ -134,12 +143,7 @@ def main():
         st.session_state.thread = user1
     
     if "vector_store" not in st.session_state:
-        client = st.session_state.client
-        vector_store = client.beta.vector_stores.create(
-            name="자료",
-            expires_after={"anchor": "last_active_at", "days": 1}
-        )
-        st.session_state.vector_store = vector_store
+        create_vectorstore()
     
     # 📋 업로드된 파일 목록 섹션
     st.header("2️⃣ 업로드된 파일 목록")

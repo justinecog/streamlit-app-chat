@@ -121,7 +121,7 @@ def main():
 
     st.markdown("---")
 
-    if "client" not in st.session_state: 
+    if "client" not in st.session_state:
         st.session_state.client = OpenAI()
         assistant = (st.session_state.client).beta.assistants.create(
             instructions="친절한 어시스턴트 봇이다.",
@@ -131,7 +131,7 @@ def main():
         st.session_state.assistant = assistant
 
     if "thread" not in st.session_state:
-        user1 = client.beta.threads.create()
+        user1 = (st.session_state.client).beta.threads.create()
         st.session_state.thread = user1
     
     if "vector_store" not in st.session_state:

@@ -46,6 +46,14 @@ def get_uploaded_files(directory):
         return os.listdir(directory)
     return []
 
+def create_vectorstore():
+    client = st.session_state.client
+    vector_store = client.beta.vector_stores.create(
+        name="자료",
+        expires_after={"anchor": "last_active_at", "days": 1}
+    )
+    st.session_state.vector_store = vector_store
+
 def delete_files_and_vectorstores():
     client = st.session_state.client
     vector_stores = client.beta.vector_stores.list().data
@@ -55,6 +63,7 @@ def delete_files_and_vectorstores():
         for file in all_files:
             client.files.delete(file.id)
         client.beta.vector_stores.delete(vector_store_id)
+    create_vectorstore()
 
 def upload_file_to_vectorstore(file):
     client = st.session_state.client

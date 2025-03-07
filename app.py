@@ -123,7 +123,7 @@ def main():
 
     if "client" not in st.session_state: 
         st.session_state.client = OpenAI()
-        assistant = client.beta.assistants.create(
+        assistant = (st.session_state.client).beta.assistants.create(
             instructions="친절한 어시스턴트 봇이다.",
             model=MODEL_NAME,
             tools=[{"type": "file_search"}]

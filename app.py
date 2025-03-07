@@ -46,14 +46,6 @@ def get_uploaded_files(directory):
         return os.listdir(directory)
     return []
 
-def create_vectorstore():
-    client = st.session_state.client
-    vector_store = client.beta.vector_stores.create(
-        name="자료",
-        expires_after={"anchor": "last_active_at", "days": 1}
-    )
-    st.session_state.vector_store = vector_store
-
 def delete_files_and_vectorstores():
     client = st.session_state.client
     vector_stores = client.beta.vector_stores.list().data
@@ -63,7 +55,6 @@ def delete_files_and_vectorstores():
         for file in all_files:
             client.files.delete(file.id)
         client.beta.vector_stores.delete(vector_store_id)
-    create_vectorstore()
 
 def upload_file_to_vectorstore(file):
     client = st.session_state.client
@@ -125,14 +116,13 @@ def main():
     if st.button("📂 폴더 삭제"):
         delete_files_and_vectorstores()
         delete_folder(UPLOAD_FOLDER)
-        st.session_state.client = OpenAI()
-        st.session_state.thread = (st.session_state.client).beta.threads.create()
 
     st.markdown("---")
 
-    if "client" not in st.session_state:
-        st.session_state.client = OpenAI()
-        assistant = (st.session_state.client).beta.assistants.create(
+    if "client" not in st.session_state: 
+        client = OpenAI()
+        st.session_state.client = client
+        assistant = client.beta.assistants.create(
             instructions="친절한 어시스턴트 봇이다.",
             model=MODEL_NAME,
             tools=[{"type": "file_search"}]
@@ -140,7 +130,7 @@ def main():
         st.session_state.assistant = assistant
 
     if "thread" not in st.session_state:
-        user1 = (st.session_state.client).beta.threads.create()
+        user1 = client.beta.threads.create()
         st.session_state.thread = user1
     
     if "vector_store" not in st.session_state:
